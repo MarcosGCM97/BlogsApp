@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "author":"Leviatan",
+    "title": "La masacre",
+    "URL":"leviatan.com",
+    "like": 5
+}
