@@ -4,6 +4,5 @@ content-type: application/json
 {
     "author":"Leviatan",
     "title": "La masacre",
-    "URL":"leviatan.com",
-    "like": 5
+    "URL":"leviatan.com"
 }

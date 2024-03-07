@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 
 app.use(express.json())
-app.use(cors)
+app.use(cors())
 
 blogs = [
     {
@@ -63,22 +63,20 @@ app.get('/api/blogs/:id', (request, response)=>{
 })
 
 const generateID =()=>{
-    const maxID = blogs.length > 0
-        ? Math.max(...blogs.map(b => b.id))
-        : 0
-
-        return maxID + 1
+  const maxId = String(Math.floor(Math.random() * 100))
+  
+  return maxId;
 }
 
 app.post('/api/blogs',(request, response)=>{
     const body = request.body
+
 
     if(!body.author){
         return response.status(400).json({
             error: 'content missing'
         })
     }
-
     const blog = {
         author: body.author,
         title: body.title,
@@ -87,9 +85,23 @@ app.post('/api/blogs',(request, response)=>{
         id: generateID()
     }
 
-    blogs.concat(blog)
+    blogs = blogs.concat(blog)
 
     response.json(blog)
+})
+
+app.put('/api/person/:id', (request, response)=>{
+  const body = request.body
+
+  const blog = {
+    author: body.author,
+    title: body.title,
+    URL: body.URL,
+    like: body.like,
+    id: body.id
+  }
+
+  response.json(blog)
 })
 
 app.delete('/api/blogs/:id', (request, response)=>{
