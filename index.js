@@ -1,66 +1,33 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const Blog = require('./models/blog')
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 
-blogs = [
-    {
-      "author": "Artur",
-      "title": "guerra de dioses",
-      "URL": "guerra.com",
-      "like": 10,
-      "id": "2dc9"
-    },
-    {
-      "author": "Gustav",
-      "title": "Sunami",
-      "URL": "agua.com",
-      "like": 11,
-      "id": "4daf"
-    },
-    {
-      "author": "Guillermina",
-      "title": "the city",
-      "URL": "provincia.com",
-      "like": 12,
-      "id": "fb4c"
-    },
-    {
-      "author": "Jacobo",
-      "title": "La Reina",
-      "URL": "LaReina.com",
-      "like": 3,
-      "id": "6212"
-    },
-    {
-      "author": "Jefrey",
-      "title": "Nieve loca",
-      "URL": "AllCrazy.com",
-      "like": 3,
-      "id": "a30b"
-    }
-]
+const url = process.env.MONGODB_URL
 
 app.get('/', (request, response)=>{
     response.send('<h1>Hello world!</h1>')
 })
 
 app.get('/api/blogs', (request, response)=>{
-    response.json(blogs)
+    Blog.find({}).then(blogs => {
+      response.json(blogs)
+    })
 })
 
 app.get('/api/blogs/:id', (request, response)=>{
-    const id = request.params.id
-    const blog = (blogs.find(blog => blog.id === id))
+  const id = request.params.id
 
-    if(blog){
-      response.json(blog)
-    } else{
+  Blog.findById(id).then(blog => {
+      response.json(blog)    
+  }).catch(error => 
       response.status(404).end()
-    }
+    )
 })
 
 const generateID =()=>{
@@ -78,17 +45,17 @@ app.post('/api/blogs',(request, response)=>{
             error: 'content missing'
         })
     }
-    const blog = {
+    const blog = new Blog({
         author: body.author,
         title: body.title,
         URL: body.URL,
         like: body.like || 0,
         id: generateID()
-    }
+    })
 
-    blogs = blogs.concat(blog)
-
-    response.json(blog)
+    blog.save().then(savedBlog=>{
+      response.json(savedBlog)
+    })
 })
 
 app.put('/api/person/:id', (request, response)=>{
@@ -107,12 +74,12 @@ app.put('/api/person/:id', (request, response)=>{
 
 app.delete('/api/blogs/:id', (request, response)=>{
   const id = request.params.id
-    blogs = blogs.filter(blog => blog.id !== id)
 
+  Blog.findByIdAndDelete(id)
     response.status(204).end()
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`);
 })
