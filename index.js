@@ -8,7 +8,7 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 
-const url = process.env.MONGODB_URL
+
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
@@ -19,8 +19,8 @@ const errorHandler = (error, request, response, next) => {
 
   next(error)
 }
-
 app.use(errorHandler)
+
 
 app.get('/', (request, response)=>{
     response.send('<h1>Hello world!</h1>')
@@ -40,8 +40,8 @@ app.get('/api/blogs/:id', (request, response, next)=>{
   const id = request.params.id
 
   Blog.findById(id).then(blog => {
-    if(blogs){
-      response.json(blogs)
+    if(blog){
+      response.json(blog)
     } else {
       response.status(404).end()
     }
@@ -49,13 +49,8 @@ app.get('/api/blogs/:id', (request, response, next)=>{
   .catch(error => next(error))
 }) 
 
-const generateID =()=>{
-  const maxId = String(Math.floor(Math.random() * 100))
-  
-  return maxId;
-}
 
-app.post('/api/blogs',(request, response)=>{
+app.post('/api/blogs',(request, response, next)=>{
     const body = request.body
 
 
@@ -68,42 +63,43 @@ app.post('/api/blogs',(request, response)=>{
         author: body.author,
         title: body.title,
         URL: body.URL,
-        like: body.like || 0,
-        id: generateID()
+        like: body.like || 0
     })
 
-    blog.save().then(savedBlog=>{
+    blog.save().then(savedBlog => {
       response.json(savedBlog)
+      mongoose.connection.close()
     })
     .catch(error => next(error))
 })
 
-app.put('/api/person/:id', (request, response)=>{
+app.put('/api/blogs/:id', (request, response, next)=>{
   const body = request.body
-
+  
   const blog = {
     author: body.author,
     title: body.title,
     URL: body.URL,
-    like: body.like,
-    id: body.id
+    like: body.like
   }
 
-  Blog.findByIdAndUpdate(body.id, blog, { new: true })
-    then(updatedBlog => {
+  Blog.findByIdAndUpdate(
+    request.params.id, blog, { new: true }
+  )
+    .then(updatedBlog => {
       response.json(updatedBlog)
     })
     .catch(error => next(error))
 })
 
-app.delete('/api/blogs/:id', (request, response)=>{
-  const id = request.params.id
+app.delete('/api/blogs/:id', (request, response, next)=>{
 
-  Blog.findByIdAndDelete(id)
-    .then(result => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
+  Blog.findByIdAndDelete(request.params.id)
+  .then(result => {
+    response.status(204).end()
+    console.log(result)
+  })
+  .catch(error => next(error))
 })
 
 const PORT = process.env.PORT

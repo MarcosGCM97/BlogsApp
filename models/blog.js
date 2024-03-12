@@ -21,8 +21,14 @@ const blogSchema = new mongoose.Schema({
     like: Number
 })
 
+blogSchema.pre('save', function(next){
+    console.log('its a error')
+    next()
+})
+
 blogSchema.set('toJSON', {
-    transform: (docuemnt, returnedObject) => {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id
         delete returnedObject.__v
     }
