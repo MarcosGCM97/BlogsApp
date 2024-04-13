@@ -96,6 +96,31 @@ describe('POST/blogs', () => {
   })
 })
 
+describe('DELETE/UPDATE request', () => {
+  test('Delete a specific blog', async () => {
+    await api.delete(`/api/blogs/${initialBlogs[1]._id}`)
+    const resGET = await api.get('/api/blogs')
+
+    const blog = resGET.body.find(blog => blog.id === initialBlogs[1]._id)
+
+    expect(blog).toBeUndefined()
+  })
+})
+
+describe('Update a specific blog', () => {
+  test('update Like property of a specific blog', async () => {
+    let updateThis = initialBlogs[0]
+    updateThis.like += 1
+
+    await api.put(`/api/blogs/${initialBlogs[0]._id}`)
+      .send({ like : updateThis.like })
+    const response = await api.get('/api/blogs')
+
+    console.log(updateThis)
+    expect(response.body[0].like).toBe(8)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
