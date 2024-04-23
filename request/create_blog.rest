@@ -1,8 +1,15 @@
-POST http://localhost:3001/api/blogs
+POST http://localhost:3001/api/login
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcmNvc0NvbmdyZSIsImlkIjoiNjYyNmJjNGJiNTA0NDU5YjU5NjNjY2Q4IiwiaWF0IjoxNzEzODc4MTU3fQ.9fwKRr7KlTcI0WvNDduFWGoh1R90Nb_IDOf_tIBv3uE
 
 {
-    "author":"Leviatan",
-    "title": "La masacre",
-    "URL":"leviatan.com"
-}
+    //"username": "Federico Bour",
+    //"name": "Fede",
+    //"password": "calictasrl"
+    //"author": "fre ", 
+    //"title": "fruact ",
+    //"URL": "friyo.com" 
+    "username": "Federico Bour",
+    "password": "calcitasrl"
+} 
+

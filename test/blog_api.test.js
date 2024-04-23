@@ -73,7 +73,7 @@ describe('POST/blogs', () => {
 
 
     const thisBlog = resPost.statusCode
-    expect(thisBlog).toBe(200)
+    expect(thisBlog).toBe(201)
 
     const length = resGet.body.length
     expect(resGet.body[length-1]).toMatchObject(newBlog)
@@ -105,9 +105,7 @@ describe('DELETE/UPDATE request', () => {
 
     expect(blog).toBeUndefined()
   })
-})
 
-describe('Update a specific blog', () => {
   test('update Like property of a specific blog', async () => {
     let updateThis = initialBlogs[0]
     updateThis.like += 1

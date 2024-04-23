@@ -51,7 +51,7 @@ const blogs = [
   }
 ]
 
-/*
+
 test('dummy returns one', () => {
   const result = listHelper.dummy(blogs)
   expect(result).toBe(6)
@@ -77,7 +77,7 @@ test('author with more blogs', () => {
 
   expect(result).toEqual(thisAuthor)
 })
-*/
+
 
 test('author with more linkes in all blogs', () => {
   const result = listHelper.mostLikes(blogs)
