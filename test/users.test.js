@@ -4,7 +4,7 @@ const app = require('../app')
 
 const api = supertest(app)
 const User = require('../models/user')
-//const userHelper = require('../utils/user_helper')
+const list_helper = require('../utils/list_helper')
 const assert = require('assert')
 
 
@@ -19,7 +19,7 @@ describe('when there is initially one user in db', () => {
   })
 
   test('creation succeeds with a fresh username', async () => {
-    const usersAtStart = await api.get('/api/users')
+    const usersAtStart = await list_helper.usersInDb()
 
     const newUser = {
       username: 'german',
@@ -33,7 +33,7 @@ describe('when there is initially one user in db', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const usersAtEnd = await api.get('/api/users')
+    const usersAtEnd = await list_helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
 
     const usernames = usersAtEnd.map(u => u.username)

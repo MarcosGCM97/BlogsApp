@@ -1,4 +1,7 @@
 const logger = require('./logger')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const process = require('process')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -8,11 +11,12 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (request, response, next) => {
   response.status(404).send({ error: 'unknown endpoint' })
+  next()
 }
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, response, next) => {
   logger.error(error.message)
 
   if(error.name === 'CastError'){
@@ -27,20 +31,33 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({ error: 'token expired' })
   }
 
-  next(error)
+  next()
 }
 
-const tokenExtractor = (request, response, error, next) => {
-  const authorization = request.get('authorization')
+const tokenExtractor = async (request, error, next) => {
+  const authorization = await request.get('authorization')
+
   if(authorization && authorization.startsWith('Bearer ')){
-
-    const token = authorization.split(' ')[1]
+    const token = authorization.replace('Bearer ', '')
     request.token = token
+  }
+  next()
+}
 
-    authorization.replace('Bearer ', '')
-    next(error)
-  } else {
-    return response.status(401).json({ error: 'token must be provided' })
+const userExtractor = async (request, response, next) => {
+  try{
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if(!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
+    if (!user) {
+      return response.status(401).json({ error: 'Missing user' })
+    }
+    request.userToken = user
+    next()
+  } catch(error){
+    return response.status(401).json({ error: 'token invalid' })
   }
 }
 
@@ -48,5 +65,6 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  userExtractor
 }
