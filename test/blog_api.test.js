@@ -68,7 +68,11 @@ describe('GET/blogs', () => {
 
 describe('POST/blogs', () => {
   test('successful request post and added to database', async () => {
-    const resPost = await api.post('/api/blogs').send(newBlog)
+    const userToken = { username: 'root', password: 'sekret' }
+    const result = await api.post('/api/login').send(userToken)
+    const token = result.body.token
+
+    const resPost = await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlog)
     const resGet = await api.get('/api/blogs')
 
 
@@ -80,7 +84,11 @@ describe('POST/blogs', () => {
   })
 
   test('default value of Like property', async () => {
-    await api.post('/api/blogs').send(newBlog)
+    const userToken = { username: 'root', password: 'sekret' }
+    const result = await api.post('/api/login').send(userToken)
+    const token = result.body.token
+
+    await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlog)
     const response = await api.get('/api/blogs')
 
     const length = response.body.length
@@ -90,18 +98,29 @@ describe('POST/blogs', () => {
   })
 
   test('error 400 Bad Request from POST request', async () => {
-    const response = await api.post('/api/blogs').send(badBlog)
+    const userToken = { username: 'root', password: 'sekret' }
+    const result = await api.post('/api/login').send(userToken)
+    const token = result.body.token
 
-    expect(response.statusCode).toBe(400)
+    const resPost = await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(badBlog)
+
+    console.log(resPost.statusCode)
+    expect(resPost).toBe(400)
   })
 })
 
 describe('DELETE/UPDATE request', () => {
   test('Delete a specific blog', async () => {
-    await api.delete(`/api/blogs/${initialBlogs[1]._id}`)
+    const userToken = { username: 'root', password: 'sekret' }
+    const result = await api.post('/api/login').send(userToken)
+    const token = result.body.token
+
+    const resPost = await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlog)
+
+    await api.delete(`/api/blogs/${resPost.body.id}`).set('Authorization', `Bearer ${token}`).expect(204)
     const resGET = await api.get('/api/blogs')
 
-    const blog = resGET.body.find(blog => blog.id === initialBlogs[1]._id)
+    const blog = resGET.body.find(blog => blog.id === resPost.body)
 
     expect(blog).toBeUndefined()
   })

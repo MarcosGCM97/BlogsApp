@@ -1,10 +1,11 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
-const process = require('process')
+const middleware = require('../utils/middleware')
+//const User = require('../models/user')
+//const jwt = require('jsonwebtoken')
+//const process = require('process')
 
-const userExtractor = async (request, response) => {
+/*const userExtractor = async (request, response) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if(!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
@@ -12,18 +13,12 @@ const userExtractor = async (request, response) => {
   const user = await User.findById(decodedToken.id)
 
   return user
-}
+}*/
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   const body = request.body
 
-  /*const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if(!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)*/
-
-  const user = await userExtractor(request, response)
+  const user = await request.user
 
   const blog = new Blog({
     author: body.author,
@@ -89,16 +84,13 @@ blogsRouter.put('/:id', async (request, response, next) => {
   }
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const id = request.params.id
   try{
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if(!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-
+    const user = await request.user
     const blog = await Blog.findById(id)
-    if(blog.user.toString() === decodedToken.id.toString()){
+
+    if(blog.user.toString() === user._id.toString()){
       await Blog.findByIdAndDelete(id)
       response.status(204).end()
     } else{
