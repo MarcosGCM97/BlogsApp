@@ -4,6 +4,16 @@ const loginRouter = require('express').Router()
 const User = require('../models/user')
 const process = require('process')
 
+/*loginRouter.get('/', async (request, response, next) => {
+  try{
+    const users = await User.find({})
+
+    response.json(users)
+  } catch(error){
+    next(error)
+  }
+})*/
+
 loginRouter.post('/', async (request,response) => {
   const { username, password } = request.body
 
