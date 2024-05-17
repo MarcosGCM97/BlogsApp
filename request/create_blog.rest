@@ -10,4 +10,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc
     "title": "El amanecer en el mas alla",
     "URL": "REYnando.com" 
 } 
+/*Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhcmlzYSBUb3JyZXMiLCJpZCI6IjY2NDZhNWE0OWUxOWE3MzNkMWQwYTA1OCIsImlhdCI6MTcxNTkwNjAxMCwiZXhwIjoxNzE1OTA5NjEwfQ.d1vfD61-WFx936RAzFvboNiT3HqLkzxLvYrh6lOCP80
+
+{
+    //"username": "Larisa Torres",
+    //"name": "La Cachetes",
+    //"password": "fullDrama"
+    "author": "Larisa Torres", 
+    "title": "El Drama de la Vida",
+    "URL": "laSheina.com" 
+} */
 
