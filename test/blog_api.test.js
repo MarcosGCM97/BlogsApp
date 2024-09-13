@@ -105,7 +105,7 @@ describe('POST/blogs', () => {
     const resPost = await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(badBlog)
 
     console.log(resPost.statusCode)
-    expect(resPost).toBe(400)
+    expect(resPost.status).toBe(400)
   })
 })
 
